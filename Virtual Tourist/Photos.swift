@@ -35,26 +35,37 @@ class Photos: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(photoURL: String, context: NSManagedObjectContext) {
+    init(photoURL: String, pin: Pin, context: NSManagedObjectContext) {
         
         let entity = NSEntityDescription.entityForName("Photos", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         self.url = photoURL
-//        self.pin = pin
+        self.pin = pin
         
         print("init from photos.swift \(url)")
     }
     
-    
-//    init(photoURL: String, pin: Pin, context: NSManagedObjectContext) {
-//        
-//        let entity = NSEntityDescription.entityForName("Photos", inManagedObjectContext: context)!
-//        super.init(entity: entity, insertIntoManagedObjectContext: context)
-//        
-//        self.url = photoURL
-//        self.pin = pin
-//        
-//        print("init from photos.swift \(url)")
-//    }
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        
+        if filePath != nil {
+            
+            let fileName = (filePath! as NSString).lastPathComponent
+            
+            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentationDirectory, .UserDomainMask, true)[0]
+            
+            let pathArray = [dirPath, fileName]
+            
+            let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
+            
+            do {
+                try NSFileManager.defaultManager().removeItemAtURL(fileURL)
+            } catch let error as NSError {
+                print("Error from prepareForDeletion - \(error)")
+            }
+        } else {
+            print("filepath is empty")
+        }
+    }
 }

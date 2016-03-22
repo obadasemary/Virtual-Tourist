@@ -9,25 +9,37 @@
 import UIKit
 import CoreData
 
+
+
+
+
+
 extension FlickrClient {
     
-    func downloadPhotosForPin(text: String, completionHandler: (success: Bool, error: NSError?) -> Void) {
+    // MARK: - Perpar download from Flickr
+    
+    func downloadPhotosForPin(pin: Pin, completionHandler: (success: Bool, error: NSError?) -> Void) {
         
         var randomPageNumber: Int = 1
-        let numberPages = 1
+//        let numberPages = 1
         
-        if numberPages > 0 {
-            
-            let pageLimit = min(numberPages, 20)
-            randomPageNumber = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+        if let numberPages = pin.pageNumber?.integerValue {
+            if numberPages > 0 {
+                
+                let pageLimit = min(numberPages, 20)
+                randomPageNumber = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+            }
         }
         
+        // Parameters for request photos
+
         let parameters: [String : AnyObject] = [
             URLKeys.Method : Methods.Search,
             URLKeys.APIKey : Constants.APIKey,
             URLKeys.Format : URLValues.JSONFormat,
             URLKeys.NoJSONCallback : 1,
-            URLKeys.Text : text,
+            URLKeys.Latitude : pin.latitude,
+            URLKeys.Longitude : pin.longitude,
             URLKeys.Extras : URLValues.URLMediumPhoto,
             URLKeys.Page : randomPageNumber,
             URLKeys.PerPage : 21
@@ -44,6 +56,8 @@ extension FlickrClient {
                 photosArray = photosDictionary[JSONResponseKeys.Photo] as? [[String : AnyObject]],
                 numberOfPhotoPages = photosDictionary[JSONResponseKeys.Pages] as? Int {
                     
+                    pin.pageNumber = numberOfPhotoPages
+                    
                     self.numberOfPhotoDownloaded = photosArray.count
                     
                     for photoDictionary in photosArray {
@@ -53,13 +67,13 @@ extension FlickrClient {
                             continue
                         }
                         
-//                        let newPhoto = Photos(photoURL: photoURLString, pin: pin, context: self.sharedContext)
-                        
-                        let newPhoto = Photos(photoURL: photoURLString, context: self.sharedContext)
-                        
+                        let newPhoto = Photos(photoURL: photoURLString, pin: pin, context: self.sharedContext)
+                
                         self.downloadPhotoImage(newPhoto, completionHandler: { (success, error) -> Void in
                             
                             self.numberOfPhotoDownloaded -= 1
+                            
+                            NSNotificationCenter.defaultCenter().postNotificationName("downloadPhotoImage.done", object: nil)
                             
                             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                                 CoreDataStackManager.sharedInstacne().saveContext()
@@ -68,11 +82,14 @@ extension FlickrClient {
                     }
                     
                     completionHandler(success: true, error: nil)
+            } else {
+                
+                completionHandler(success: false, error: NSError(domain: "downloadPhotosForPin", code: 0, userInfo: nil))
             }
-            
-            completionHandler(success: false, error: NSError(domain: "downloadPhotosForPin", code: 0, userInfo: nil))
         }
     }
+    
+    // MARK: - Download save image and change file path for photo
     
     func downloadPhotoImage(photo: Photos, completionHandler: (success: Bool, error: NSError?) -> Void) {
         
@@ -92,6 +109,7 @@ extension FlickrClient {
                 let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
                 let pathArray = [dirPath, fileName]
                 let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
+                print(fileURL)
                 
                 NSFileManager.defaultManager().createFileAtPath((fileURL.path)!, contents: result, attributes: nil)
                 
@@ -101,6 +119,8 @@ extension FlickrClient {
             }
         }
     }
+    
+    // MARK: - Core Data Convenience
     
     var sharedContext: NSManagedObjectContext {
         return CoreDataStackManager.sharedInstacne().managedObjectContext
