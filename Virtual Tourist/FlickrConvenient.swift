@@ -9,11 +9,6 @@
 import UIKit
 import CoreData
 
-
-
-
-
-
 extension FlickrClient {
     
     // MARK: - Perpar download from Flickr
