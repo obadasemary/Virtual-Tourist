@@ -89,6 +89,13 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <label key="backgroundView" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This pin has no Images" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nRi-YJ-kQP">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="328"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCollectionViewCell" id="EPA-hc-7kd" customClass="PhotoCollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="175" height="118"/>
@@ -135,6 +142,9 @@
                                     <constraint firstAttribute="height" constant="35" id="Jg2-Zr-cC2"/>
                                 </constraints>
                                 <state key="normal" title="New Collection"/>
+                                <connections>
+                                    <action selector="newCollection:" destination="etY-9h-Cob" eventType="touchUpInside" id="hX6-YC-UnM"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -152,8 +162,19 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jux-uP-fhy">
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="73G-3s-69i"/>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="73G-3s-69i">
+                            <connections>
+                                <action selector="editCollection:" destination="etY-9h-Cob" id="FzZ-qN-m6s"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="collectionView" destination="vU9-gm-fjn" id="QlN-1h-Bu1"/>
+                        <outlet property="editButton" destination="73G-3s-69i" id="Z75-M9-W8A"/>
+                        <outlet property="mapView" destination="S2S-Vd-dNM" id="Tra-b1-sHp"/>
+                        <outlet property="newCollectionButton" destination="ykg-v7-otc" id="7Nn-1q-7be"/>
+                        <outlet property="noImagesLabel" destination="nRi-YJ-kQP" id="pbE-ea-vvV"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cnP-V4-Z5c" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -162,7 +183,7 @@
         <!--Image Detail-->
         <scene sceneID="vFC-xW-dt4">
             <objects>
-                <viewController id="v5f-XZ-28k" customClass="ImageViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ImageViewController" id="v5f-XZ-28k" customClass="ImageViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="i8T-LJ-cgD"/>
                         <viewControllerLayoutGuide type="bottom" id="2UI-Sc-fhx"/>
@@ -184,6 +205,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Image Detail" id="dRC-Ex-3cP"/>
+                    <connections>
+                        <outlet property="myImageView" destination="5s8-Qz-5Zl" id="nRU-XF-53D"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r2d-69-VTE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
