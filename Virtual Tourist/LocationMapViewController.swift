@@ -62,15 +62,149 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
             mapView.addAnnotation(annotation)
         }
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    @IBAction func editClicked(sender: UIBarButtonItem) {
+        
+        if editingPins == false {
+            editingPins = true
+            navigationItem.rightBarButtonItem?.title = "Done"
+        } else if editingPins {
+            navigationItem.rightBarButtonItem?.title = "Edit"
+            editingPins = false
+        }
     }
-    */
+    
+    func handLongPress(gestureRecognizer: UIGestureRecognizer) {
+        
+        if (editingPins) {
+            return
+        } else {
+            
+            if gestureRecognizer.state != .Began {
+                return
+            }
+            
+            // take point
+            let touchPoint = gestureRecognizer.locationInView(self.mapView)
+            
+            // convert point to coordinate from view
+            let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
+            
+            // init annotation
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = touchMapCoordinate
+            
+            // init new pin
+            let newPin = Pin(lat: annotation.coordinate.latitude, long: annotation.coordinate.longitude, context: sharedContext)
+            
+            // save to core data
+            CoreDataStackManager.sharedInstacne().saveContext()
+            
+            // adding newpin to pins array
+            pins.append(newPin)
+            
+            // add newpin to map
+            mapView.addAnnotation(annotation)
+            
+            FlickrClient.sharedInstance().downloadPhotosForPin(newPin, completionHandler: { (success, error) -> Void in
+                
+                let coordinates = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
+                
+                let geoCoder = CLGeocoder()
+                
+                geoCoder.reverseGeocodeLocation(coordinates, completionHandler: { (placemark, error) -> Void in
+                    
+                    guard (error == nil) else {
+                        print("Error: \(error?.localizedDescription)")
+                        return
+                    }
+                    
+                    if placemark!.count > 0 {
+                        let pm = placemark![0] as CLPlacemark
+                        if (pm.locality != nil) && (pm.country != nil) {
+                            annotation.title = "\(pm.locality), \(pm.country)"
+                        } else {
+                            print("Error in placemark")
+                        }
+                    }
+                })
+            })
+        }
+    }
+    
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
+        annotationView.canShowCallout = false
+        
+        return annotationView
+    }
 
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        
+        mapView.deselectAnnotation(view.annotation, animated: true)
+        
+        guard let annotation = view.annotation else {
+            return
+        }
+        
+        let title = annotation.title
+        print(title)
+        
+        selectedPin = nil
+        
+        for pin in pins {
+            
+            if annotation.coordinate.latitude == pin.latitude && annotation.coordinate.longitude == pin.longitude {
+                
+                selectedPin = pin
+                
+                if editingPins {
+                    
+                    print("Deleting pin")
+                    sharedContext.deleteObject(selectedPin!)
+                    
+                    // delete selected pin on map
+                    self.mapView.removeAnnotation(annotation)
+                    
+                    // save changes in core data
+                    CoreDataStackManager.sharedInstacne().saveContext()
+                } else {
+                    
+                    if title != nil {
+                        pin.pinTitle = title!
+                    } else {
+                        pin.pinTitle = "This pin has no name"
+                    }
+                    
+                    // Move to the Phone Album View Controller
+                    self.performSegueWithIdentifier("PhotoAlbum", sender: nil)
+                }
+            }
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if (segue.identifier == "PhotoAlbum") {
+            
+            let viewController = segue.destinationViewController as! PhotoAlbumViewController
+            viewController.pin = selectedPin
+        }
+    }
+    
+    // Change map type (satellite) via segmented control
+    @IBAction func segmentedControlAction(sender: UISegmentedControl) {
+        
+        switch (sender.selectedSegmentIndex) {
+        case 0:
+            mapView.mapType = .Standard
+        case 1:
+            mapView.mapType = .Satellite
+        case 2:
+            mapView.mapType = .Hybrid
+        default:
+            mapView.mapType = .Standard
+        }
+    }
 }

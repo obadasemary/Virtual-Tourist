@@ -9,7 +9,14 @@
 import UIKit
 
 class PhotoAlbumViewController: UIViewController {
+    
+    var pin: Pin? = nil
+    
+    // Flag for deletong photo
+    var isDeleting = false
 
+    var editingFlage: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

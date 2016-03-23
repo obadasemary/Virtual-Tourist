@@ -18,19 +18,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="x1E-6J-IJA">
-                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
-                            </mapView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Kkb-ZT-YoL">
                                 <rect key="frame" x="150" y="552" width="300" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="aOD-8G-nga"/>
                                 </constraints>
                                 <segments>
-                                    <segment title="First"/>
-                                    <segment title="Second"/>
+                                    <segment title="Standard"/>
+                                    <segment title="Satellite"/>
+                                    <segment title="Hybrid"/>
                                 </segments>
+                                <connections>
+                                    <action selector="segmentedControlAction:" destination="WFS-Jg-4QH" eventType="valueChanged" id="PTJ-Aj-LmP"/>
+                                </connections>
                             </segmentedControl>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="x1E-6J-IJA">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -43,12 +47,16 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0dj-mT-G0o">
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="snk-uH-jnb"/>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="snk-uH-jnb">
+                            <connections>
+                                <action selector="editClicked:" destination="WFS-Jg-4QH" id="vZ8-tq-bOf"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="editButton" destination="snk-uH-jnb" id="Rgi-te-LCB"/>
                         <outlet property="mapView" destination="x1E-6J-IJA" id="RZE-tO-VRt"/>
-                        <segue destination="etY-9h-Cob" kind="show" id="yAI-CI-tkM"/>
+                        <segue destination="etY-9h-Cob" kind="show" identifier="PhotoAlbum" id="yAI-CI-tkM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x6C-6K-JwR" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -82,7 +90,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="EPA-hc-7kd" customClass="PhotoCollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCollectionViewCell" id="EPA-hc-7kd" customClass="PhotoCollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="175" height="118"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -113,6 +121,11 @@
                                             <constraint firstItem="oTP-We-M9Z" firstAttribute="trailing" secondItem="EPA-hc-7kd" secondAttribute="trailingMargin" id="hwt-Eb-gZo"/>
                                             <constraint firstItem="zIl-p0-AHl" firstAttribute="centerY" secondItem="yyM-fU-ctQ" secondAttribute="centerY" id="qKO-Qp-oMN"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="activityIndicator" destination="zIl-p0-AHl" id="hdh-RW-XDf"/>
+                                            <outlet property="deleteButton" destination="yyM-fU-ctQ" id="e4B-3n-YpU"/>
+                                            <outlet property="photoView" destination="oTP-We-M9Z" id="N8L-hC-oEh"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
