@@ -39,14 +39,29 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        let longPressRecogniser = UILongPressGestureRecognizer(target: self, action: "handLongPress:")
+        
+        longPressRecogniser.minimumPressDuration = 1.0
+        mapView.addGestureRecognizer(longPressRecogniser)
+        
+        mapView.delegate = self
+        
+        addSavedPinsToMap()
     }
     
+    func addSavedPinsToMap() {
+        
+        pins = fetchAllPins()
+        print("Pins Count in core data is \(pins.count)")
+        
+        for pin in pins {
+            
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = pin.coordinate
+            annotation.title = pin.pinTitle
+            mapView.addAnnotation(annotation)
+        }
+    }
 
     /*
     // MARK: - Navigation
