@@ -148,8 +148,8 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
             return
         }
         
-        let title = annotation.title
-        print(title)
+        let title = annotation.title!
+        print(annotation.title)
         
         selectedPin = nil
         

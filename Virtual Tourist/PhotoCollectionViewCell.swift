@@ -22,5 +22,6 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         if photoView.image == nil {
             activityIndicator.startAnimating()
         }
+//        activityIndicator.stopAnimating()
     }
 }
