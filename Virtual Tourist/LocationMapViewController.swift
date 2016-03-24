@@ -80,7 +80,7 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
             return
         } else {
             
-            if gestureRecognizer.state != .Began {
+            if gestureRecognizer.state != .Ended {
                 return
             }
             
