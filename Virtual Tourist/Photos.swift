@@ -49,32 +49,16 @@ class Photos: NSManagedObject {
     override func prepareForDeletion() {
         super.prepareForDeletion()
         
+        let directory = CoreDataStackManager.sharedInstacne().applicationDocumentsDirectory
+        
         if filePath != nil {
             
-//            let fileName = (filePath! as NSString).lastPathComponent
-//            
-//            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentationDirectory, .UserDomainMask, true)[0]
-//            
-//            let pathArray = [dirPath, fileName]
-//            
-//            let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
-//            
-//            do {
-//                try NSFileManager.defaultManager().removeItemAtURL(fileURL)
-//            } catch let error as NSError {
-//                print("Error from prepareForDeletion - \(error)")
-//            }
-//        } else {
-//            print("filepath is empty")
-//        }
+            let fileName = (filePath! as NSString)
             
-            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-            let pathArray = [dirPath, filePath]
-            
-            let fileURL = NSURL.fileURLWithPath(pathArray)
+            let fileToDelete = directory.URLByAppendingPathComponent(fileName as String)
             
             do {
-                try NSFileManager.defaultManager().removeItemAtURL(fileURL)
+                try NSFileManager.defaultManager().removeItemAtURL(fileToDelete)
             } catch let error as NSError {
                 print("Error from prepareForDeletion - \(error)")
             }
