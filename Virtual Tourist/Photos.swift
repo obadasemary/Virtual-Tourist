@@ -51,17 +51,30 @@ class Photos: NSManagedObject {
         
         if filePath != nil {
             
-            let fileName = (filePath! as NSString).lastPathComponent
+//            let fileName = (filePath! as NSString).lastPathComponent
+//            
+//            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentationDirectory, .UserDomainMask, true)[0]
+//            
+//            let pathArray = [dirPath, fileName]
+//            
+//            let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
+//            
+//            do {
+//                try NSFileManager.defaultManager().removeItemAtURL(fileURL)
+//            } catch let error as NSError {
+//                print("Error from prepareForDeletion - \(error)")
+//            }
+//        } else {
+//            print("filepath is empty")
+//        }
             
-            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentationDirectory, .UserDomainMask, true)[0]
+            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+            let pathArray = [dirPath, filePath]
             
-            let pathArray = [dirPath, fileName]
-            
-            let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
+            let fileURL = NSURL.fileURLWithPath(pathArray)
             
             do {
                 try NSFileManager.defaultManager().removeItemAtURL(fileURL)
-                try NSFileManager.defaultManager().removeItemAtPath(fileName)
             } catch let error as NSError {
                 print("Error from prepareForDeletion - \(error)")
             }
